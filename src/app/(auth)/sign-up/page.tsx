@@ -1,20 +1,25 @@
-"use client"
+'use client'
+import React from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
 import Link from "next/link"
 import { useEffect, useState } from "react"
-import { useDebounceValue } from 'usehooks-ts'
+import {  useDebounceCallback } from 'usehooks-ts'
 import { useToast } from "@/hooks/use-toast"
-import { useRouter } from "next/router"
+import { useRouter } from "next/navigation"
 import { signUpSchema } from "@/schemas/signUpSchema"
-import axios from 'axios'
+import axios, {AxiosError} from 'axios'
+import { ApiResponse } from "@/types/ApiResponse";
+import { Form, FormControl, FormDescription, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { FormField } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
 
 
-
-
-const page = () => {
-
+const Page = () => {
+    
     //1. useState
     const [username, setUsername] = useState('')
     const [usernameMessage, setUsernameMessage] = useState('')
@@ -24,7 +29,7 @@ const page = () => {
     //2. we need to send the usernames and receive it back
 
     //set username and as soon as it is set we send request to backend to get its value - so we use useDebounceValue
-    const debounced = useDebounceValue(setUsername, 300)
+    const debounced = useDebounceCallback(setUsername, 300)
 
     //3. Toast
     const { toast } = useToast()
@@ -52,16 +57,16 @@ const page = () => {
 
                 try {
                     //AXIOS :
-                    const response = await axios.get('/api/check-username-unique?username=${username}')
+                    const response = await axios.get(`/api/check-username-unique?username=${username}`)
                    
-                    let message = response.data.message
+                    const message = response.data.message
                    
                     setUsernameMessage(message)
                 }
                 catch (error) {
                     const axiosError = error as AxiosError<ApiResponse>;
 
-                    setUserameMessage(
+                    setUsernameMessage(
                         axiosError.response?.data.message ?? "Error checking username"
                     )
                 }
@@ -77,7 +82,7 @@ const page = () => {
 
 
 
-    const onSubmit = async (data: z.inder<typeof signUpSchema>) => {
+    const onSubmit = async (data: z.infer<typeof signUpSchema>) => {
         setIsSubmitting(true)
 
         try {
@@ -87,7 +92,9 @@ const page = () => {
                 title: 'Success',
                 description: response.data.message
             })
-            router.replace('/verify/${username}')
+            
+            router.replace(`/verify/${username}`)
+            
             setIsSubmitting(false)
         }
         catch (error) {
@@ -95,7 +102,7 @@ const page = () => {
 
             const axiosError = error as AxiosError<ApiResponse>;
 
-            let errorMessage = axiosError.response?.data.message
+            const errorMessage = axiosError.response?.data.message
 
             toast({
                 title: "Signup failed",
@@ -112,8 +119,8 @@ const page = () => {
 
     return (
         <div className=" flex justify-center items-center min-h-screen bg-gray-100 ">
+            
             <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-md ">
-
 
                 <div className="text-center">
                     <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl mb-6">
@@ -126,7 +133,7 @@ const page = () => {
 
                 {/* form from Shadcn*/}
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmuit(onSubmit)} className="space-y-6">
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
 
                         {/* handle username */}
                         <FormField
@@ -145,9 +152,9 @@ const page = () => {
                                     </FormControl>
 
                                     {isCheckingUsername && <Loader2 className="animate-spin"/>}
+
                                     <p className = {`text-sm ${usernameMessage === "Username is unique" ? 'text-green-500' : 'text-red-500' }`}>
                                         test{usernameMessage}
-                                           
                                     </p>
                                    
                                     <FormMessage />
@@ -164,7 +171,6 @@ const page = () => {
                                     <FormLabel>Email</FormLabel>
                                     <FormControl>
                                         <Input placeholder="email" {...field}
-
                                         />
                                     </FormControl>
                                     <FormDescription>This is your public display name.</FormDescription>
@@ -182,7 +188,6 @@ const page = () => {
                                     <FormLabel>Password</FormLabel>
                                     <FormControl>
                                         <Input type="password" placeholder="password" {...field}
-
                                         />
                                     </FormControl>
                                     <FormDescription>This is your public display name.</FormDescription>
@@ -196,9 +201,8 @@ const page = () => {
                             {
                                 isSubmitting ? (
                                     <>
-                                        <Loader2 className="mr-2 h-4 w-4 animate-spin">
-                                            Please Wait
-                                        </>
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin"/>   Please Wait
+                                        
                                     </>
 
                                 ) : ('Signup')
@@ -225,4 +229,4 @@ const page = () => {
     );
 };
 
-export default page; 
+export default Page; 

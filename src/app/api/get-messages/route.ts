@@ -12,27 +12,22 @@ import { User } from "next-auth";
 
 export async function GET(request: Request) {
 
+  await dbConnect();
+  const session = await getServerSession(authOptions);
+  const user: User = session?.user as User;
+
+  if (!session || !session.user) {
+    return Response.json({
+        success: false,
+        message: "Not Authenticated", 
+      },
+      { status: 401 } 
+    );
+  }
+
+  const userId = new mongoose.Types.ObjectId(user._id);
+
   try {
-    
-     await dbConnect();
-
-    
-    const session = await getServerSession(authOptions);
-    const user: User = session?.user as User;
-
-  
-    if (!session || !session.user) {
-      return new Response(
-        JSON.stringify({
-          success: false,
-          message: "Not Authenticated", 
-        }),
-        { status: 401 } 
-      );
-    }
-
-    
-    const userId = new mongoose.Types.ObjectId(user._id);
 
     //aggregation pipeline:
     const user = await UserModel.aggregate([
@@ -43,32 +38,29 @@ export async function GET(request: Request) {
     ]);
 
      
-    if (!user || user.length == 0) {
-      return new Response(
-        JSON.stringify({
+    if (!user || user.length === 0) {
+      return Response.json({
           success: false,
           message: "User not found", 
-        }),
+        },
         { status: 401 } 
       );
     }
 
  
-    return new Response(
-      JSON.stringify({
+    return Response.json({
         success: true,
         messages: user[0].messages, 
-      }),
+      },
       { status: 200 } 
     );
     
   } catch (error) {
-     console.log("An unexpected error occured", error);
-    return new Response(
-      JSON.stringify({
+     console.log("An unexpected error occurred", error);
+     return Response.json({
         success: false,
         message: "Not Authenticated", 
-      }),
+      },
       { status: 500 } 
     );
   }

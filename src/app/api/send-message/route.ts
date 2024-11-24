@@ -2,8 +2,6 @@
 import dbConnect from "@/lib/dbConnect"; 
 import UserModel from "@/app/model/User";
 import { Message } from "@/app/model/User";
-import { create } from "domain"; 
-
 
 
 export async function POST(request: Request) {
@@ -18,22 +16,20 @@ export async function POST(request: Request) {
         const user = await UserModel.findOne({ username });
 
         if (!user) {
-            return new Response(
-                JSON.stringify({
+            return Response.json({
                     success: false,
                     message: "User not found" 
-                }),
+                },
                 { status: 404 } 
             );
         }
 
         //switch on/off
         if (!user.isAcceptingMessage) {
-            return new Response(
-                JSON.stringify({
+            return Response.json({
                     success: false,
                     message: "User is not accepting messages" 
-                }),
+                },
                 { status: 403 } 
             );
         }
@@ -41,26 +37,25 @@ export async function POST(request: Request) {
         
         const newMessage = { content, createdAt: new Date() };
                     
-        user.messages.push(newMessage as Message);
+        //user.message.push(newMessage as Message);
+        user.messages.push(newMessage as Message)
    
         await user.save();
         
-        return new Response(
-            JSON.stringify({
+        return Response.json({
                 success: true,
                 message: "Message sent successfully",
-            }),
+            },
             { status: 200 } 
         );
     } catch (error) {
         
         console.log("Error adding messages", error);
 
-        return new Response(
-            JSON.stringify({
+        return Response.json({
                 success: false,
                 message: "Internal server error" 
-            }),
+            },
             { status: 500 } 
         );
     }

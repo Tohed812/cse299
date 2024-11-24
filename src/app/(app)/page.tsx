@@ -1,4 +1,4 @@
-"use client";
+"use client"
 //Week: 01
 //messages.json, page.tsx,
 
@@ -16,7 +16,9 @@ import {
 import messages from "@/messages.json";
 
 //importing autoplay to automatically swipe the carousel cards
-import Autoplay from "embla-carousel-autoplay";
+import Autoplay from "embla-carousel-autoplay"
+
+
 
 const Home = () => {
   return (

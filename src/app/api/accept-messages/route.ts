@@ -14,11 +14,11 @@ export async function POST(request: Request) { //switch on or off? its a req
 
     
     if (!session || !session.user) {
-        return new Response(
-            JSON.stringify({
+        return Response.json(
+            {
                 success: false,
                 message: "Not Authenticated", 
-            }),
+            },
             { status: 401 } 
         );
     }
@@ -40,32 +40,29 @@ export async function POST(request: Request) { //switch on or off? its a req
         );
 
         if (!updatedUser) {
-            return new Response(
-                JSON.stringify({
+            return Response.json({
                     success: false,
                     message: "Failed to update user status to accept messages", 
-                }),
+                },
                 { status: 401 } 
             );
         }
 
-        return new Response(
-            JSON.stringify({
+        return Response.json({
                 success: true, 
                 message: "Message acceptance status updated successfully", 
                 updatedUser, 
-            }),
+            },
             { status: 200 } 
         );
     } catch (error) {
         
         console.log("Failed to update user status to accept messages", error);
         return Response.json(
-            JSON.stringify(
                 {
                 success: false, 
                 message: "Failed to update user status to accept messages",
-            }),
+            },
             { status: 500 } 
         );
     }
@@ -75,18 +72,17 @@ export async function POST(request: Request) { //switch on or off? its a req
 
 
 
-export async function GET(request: Request) {
+export async function GET() {
     await dbConnect(); 
 
     const session = await getServerSession(authOptions); 
     const user: User = session?.user as User; 
 
     if (!session || !session.user) {
-        return new Response(
-            JSON.stringify({
+        return Response.json({
                 success: false,
                 message: "Not Authenticated", 
-            }),
+            },
             { status: 401 } 
         );
     }
@@ -111,7 +107,7 @@ export async function GET(request: Request) {
         return Response.json(
             {
                 success: true,
-                isAcceptingMessages: foundUser.    isAcceptingMessage
+                isAcceptingMessages: foundUser.isAcceptingMessage
             },
             {
                 status: 200
@@ -122,11 +118,10 @@ export async function GET(request: Request) {
         console.log("Failed to update user status to accept messages", error);
 
         return Response.json(
-            JSON.stringify(
-                {
+            {
                 success: false, 
                 message: "Error in getting Acceptance Status",
-            }),
+            },
             { status: 500 } 
         );
     }
