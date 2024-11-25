@@ -1,8 +1,11 @@
 "use client"
 
 import React from 'react'
+
 import { useSession, signOut } from 'next-auth/react'
 import { User } from 'next-auth'
+import { Button } from './ui/button'
+import Link from 'next/link'
 
 
 const Navbar = () => {
@@ -19,14 +22,15 @@ const Navbar = () => {
                     session ? (
                         //if signed in
                         <>
-                            <span className="mr-4">Welcome, {user?.username || user.email}</span>
-                            <button className="w-full md:w-auto" onClick={() => signOut()}>  Log-out </button>
+                            <span className="mr-4">Welcome, {user?.username || user?.email}</span>
+                            
+                            <Button className="w-full md:w-auto" onClick={() => signOut()}>  Log-out </Button>
                         </>
                     ) : (
                         //if not signed
-                        <link  href="/sign-in">
-                            <button className="w-full md:w-auto">Log IN</button>
-                        </link>
+                        <Link  href="/sign-in">
+                            <Button className="w-full md:w-auto">Log IN</Button>
+                        </Link>
 
                     )
                 }

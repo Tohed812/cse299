@@ -17,7 +17,7 @@ import { Loader2, RefreshCcw } from "lucide-react"
 import MessageCard from "@/components/MessageCard"
 
 
-const page = () => {
+const Page = () => {
 
   const [messages, setMessages] = useState<Message[]>([])
   const [isLoading, setIsLoading] = useState(false)
@@ -217,9 +217,7 @@ const page = () => {
           {
             messages.length > 0 ? (
               messages.map((message, index) => 
-                <MessageCard
-                  key={message._id}
-                  message={message}
+                <MessageCard  key={message._id}  message={message}
                   onMessageDelete={handleDeleteMessage}
                 />
               )
@@ -236,4 +234,4 @@ const page = () => {
 
 }
 
-export default page
+export default Page;
